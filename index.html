@@ -36,26 +36,42 @@
     // Some browsers partially implement mediaDevices. We can't just assign an object
     // with getUserMedia as it would overwrite existing properties.
     // Here, we will just add the getUserMedia property if it's missing.
-    if (navigator.mediaDevices.getUserMedia === undefined) {
-        navigator.mediaDevices.getUserMedia = function (constraints, successCb, errCb) {
+    // if (navigator.mediaDevices.getUserMedia === undefined) {
+    //     navigator.mediaDevices.getUserMedia = function (constraints, successCb, errCb) {
 
-            // First get ahold of the legacy getUserMedia, if present
-            // var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-            var getUserMedia = navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-            // Some browsers just don't implement it - return a rejected promise with an error
-            // to keep a consistent interface
-            if (!getUserMedia) {
-                return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-            }
+    //         // First get ahold of the legacy getUserMedia, if present
+    //         // var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    //         var getUserMedia = navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+    //         // Some browsers just don't implement it - return a rejected promise with an error
+    //         // to keep a consistent interface
+    //         if (!getUserMedia) {
+    //             return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+    //         }
 
-            // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
-            getUserMedia.call(navigator, constraints, successCb, errCb);
-            // return new Promise(function (resolve, reject) {
-            //     getUserMedia.call(navigator, constraints, resolve, reject);
-            // });
-        }
+    //         // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+    //         getUserMedia.call(navigator, constraints, successCb, errCb);
+    //         // return new Promise(function (resolve, reject) {
+    //         //     getUserMedia.call(navigator, constraints, resolve, reject);
+    //         // });
+    //     }
+    // }
+    function getUserMedia(constraints, success, error) {
+      if (navigator.mediaDevices.getUserMedia) {
+        //最新的标准API
+        navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+      } else if (navigator.webkitGetUserMedia) {
+        //webkit核心浏览器
+        navigator.webkitGetUserMedia(constraints,success, error)
+      } else if (navigator.mozGetUserMedia) {
+        //firfox浏览器
+        navigator.mozGetUserMedia(constraints, success, error);
+      } else if (navigator.getUserMedia) {
+        //旧版API
+        navigator.getUserMedia(constraints, success, error);
+      }
     }
-    navigator.mediaDevices.getUserMedia({ audio: true, video: true }, function (stream) {
+
+    getUserMedia({ audio: true, video: true }, function (stream) {
         console.log('获取的视频数据流：', stream);
         var video = document.querySelector('video');
         // Older browsers may not have srcObject
