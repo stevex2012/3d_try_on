@@ -27,7 +27,7 @@
     <video id="video_player" autoplay crossorigin></video>
 </body>
 <script>
-    var constraints = { video: { 'facingMode': "user" } };
+    var constraints = { audio: true, video: { 'facingMode': "user" } };
     // Older browsers might not implement mediaDevices at all, so we set an empty object first
     if (navigator.mediaDevices === undefined) {
         navigator.mediaDevices = {};
@@ -57,7 +57,7 @@
 
     navigator.mediaDevices.getUserMedia({ audio: true, video: true })
         .then(function (stream) {
-            console.log('获取的视频数据流：',stream);
+            console.log('获取的视频数据流：', stream);
             var video = document.querySelector('video');
             // Older browsers may not have srcObject
             if ("srcObject" in video) {
@@ -65,12 +65,14 @@
             } else if ("mozSrcObject " in video) {
                 video.mozSrcObject = stream;
             } else {
+                window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
                 // Avoid using this in new browsers, as it is going away.
                 video.src = window.URL.createObjectURL(stream);
             }
-            video.onloadedmetadata = function (e) {
-                video.play();
-            };
+            video.play();
+            // video.onloadedmetadata = function (e) {
+            //     video.play();
+            // };
         })
         .catch(function (err) {
             console.log(err.name + ": " + err.message);
