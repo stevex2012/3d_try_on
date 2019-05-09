@@ -31,8 +31,8 @@
         navigator.mozGetUserMedia;
 
     if (navigator.getUserMedia) {
-        // navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
-        navigator.getUserMedia({ audio: true },
+        navigator.getUserMedia({ audio: true, video: { width: 1280, height: 720 } },
+        // navigator.getUserMedia({ audio: true },
             function (stream) {
                 var video = document.querySelector('#video_player');
                 video.srcObject = stream;
