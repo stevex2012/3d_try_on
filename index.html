@@ -24,10 +24,10 @@
 
 <body>
     <div class="mention">camera</div>
-    <video id="video_player" autoplay controls crossorigin height="200px" width="200px"></video>
+    <video id="video_player" autoplay crossorigin></video>
 </body>
 <script>
-    var constraints = { audio: true, video:{ 'facingMode': "user" } }; 
+    var constraints = { video: { 'facingMode': "user" } };
     // Older browsers might not implement mediaDevices at all, so we set an empty object first
     if (navigator.mediaDevices === undefined) {
         navigator.mediaDevices = {};
@@ -57,10 +57,13 @@
 
     navigator.mediaDevices.getUserMedia({ audio: true, video: true })
         .then(function (stream) {
+            console.log('获取的视频数据流：',stream);
             var video = document.querySelector('video');
             // Older browsers may not have srcObject
             if ("srcObject" in video) {
                 video.srcObject = stream;
+            } else if ("mozSrcObject " in video) {
+                video.mozSrcObject = stream;
             } else {
                 // Avoid using this in new browsers, as it is going away.
                 video.src = window.URL.createObjectURL(stream);
